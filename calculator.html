@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claculator</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .calculator{
+        width: 100%;
+        min-height: 90vh;
+        background: #fff;
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        max-width: 400px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+        gap: 8px;
+        border-radius: 8px;
+    }
+
+    .calculator .output{
+        background-color: #609cc2;
+        grid-column: 1/5;
+        color: #fff;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        font-size: 40px;
+        padding: 20px;
+        border-radius: 4px;
+        word-break: break-all;
+        word-wrap: break-word;
+    }
+
+    .calculator button{
+        font-size: 20px;
+        font-weight: 500;
+        border: none;
+        background: none;
+        box-shadow: 0px 0px 8px #999999;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .calculator button:hover{
+        background: #d4d4d4;
+    }
+
+    .cancel{
+        grid-column: span 2;
+    }
+
+    .calculator button:last-child{
+        background-color: #609cc2;
+        color: #fff;
+    }
+    
+    </style>
+<body>
+    <div class="calculator">
+        <div class="output">
+            <div id="result">0</div>
+        </div>
+        <button id="clear-button" class="cancel">C</button>
+        <button id="delete-button">&larr;</button>
+        <button id="divide-button">/</button>
+        <button class="number">7</button>
+        <button class="number">8</button>
+        <button class="number">9</button>
+        <button id="multiply-button">*</button>
+        <button class="number">4</button>
+        <button class="number">5</button>
+        <button class="number">6</button>
+        <button id="subtract-button">-</button>
+        <button class="number">1</button>
+        <button class="number">2</button>
+        <button class="number">3</button>
+        <button id="add-button">+</button>
+        <button id="decimal-button">.</button>
+        <button class="number">0</button>
+        <button id="equal-button" class="cancel">=</button>
+    </div>
+
+    <script>
+    const resultelement = document.getElementById('result')
+    const clearbtn = document.getElementById('clear-button');
+    const deletebtn = document.getElementById('delete-button');
+    const dividebtn = document.getElementById('divide-button');
+    const multiplybtn = document.getElementById('multiply-button');
+    const subtractbtn = document.getElementById('subtract-button');
+    const addbtn = document.getElementById('add-button');
+    const decimalbtn = document.getElementById('decimal-button');
+    const equalbtn = document.getElementById('equal-button');
+    const numberbtns = document.querySelectorAll('.number');
+
+
+    //initialize the variables
+    let result = '';
+    let operation = '';
+    let previousOperand = 0;
+
+
+    //example 24 + 5 
+    //opeartion = +
+    //previousOperand = 24
+    //result = 29
+
+
+    //function to append number
+    const appendNumber = (number) => {
+        if(number == '.' && result.includes('.')) return;
+        result += number;
+        updateDisplay();
+    }
+
+    //function to update display
+    const updateDisplay = () => {
+        if(operation){
+            resultelement.innerText = `${previousOperand} ${operation} ${result}`;
+        }
+        else{
+            resultelement.innerText = result;
+        }
+     }
+
+    //function to select operator
+    const selectOperator = (operatorValue) => {
+        if(result == '') return;
+
+        if(operation != '' && previousOperand != ''){
+            calculateResult();
+        }
+
+        operation = operatorValue;
+        previousOperand = result;
+        result ='' ;
+        updateDisplay();    
+    }
+
+    //function to calculate reslt
+    const calculateResult = () =>{
+        let evaluatedResult;
+        const prev= parseFloat(previousOperand);
+        const current=parseFloat(result);
+
+        if(isNaN(prev) || isNaN(current)) return;
+
+        switch (operation){
+            case '+':
+                 evaluatedResult=prev+current;
+                 break;
+            case '-':
+                 evaluatedResult=prev-current;
+                 break;
+            case '*':
+                 evaluatedResult=prev*current;
+                 break;
+            case '/':
+                 evaluatedResult=prev/current;
+                 break;
+            default:
+                return;
+        }
+
+        result=evaluatedResult.toString();
+        operation='';
+        previousOperand='';
+    }
+    
+
+    //Add event listener to number button
+    numberbtns.forEach(button =>{
+        button.addEventListener('click',()=>{
+            /*console.log(button.innerText);*/
+            appendNumber(button.innerText);
+         });
+    });
+
+    //function to clear display
+    const clearDisplay=()=>{
+        result='';
+        previousOperand='';
+        operation='';
+        updateDisplay();
+    }
+
+
+    //function to delete last character on display
+    const deleteLastDigit=()=>{
+        if(result=='') return;
+        result=result.slice(0,-1);//starting index and last index
+        updateDisplay();
+    }
+
+    decimalbtn.addEventListener('click',()=>appendNumber('.'));
+    addbtn.addEventListener('click',()=>selectOperator('+'));
+    subtractbtn.addEventListener('click',()=>selectOperator('-'));
+    multiplybtn.addEventListener('click',()=>selectOperator('*'));
+    dividebtn.addEventListener('click',()=>selectOperator('/'));
+    equalbtn.addEventListener('click',()=>{ 
+        if(result=='') return;
+        calculateResult();
+        updateDisplay();
+    })
+
+    clearbtn.addEventListener('click',clearDisplay);
+    deletebtn.addEventListener('click',deleteLastDigit);
+    </script>
+
+
+</body>
+</html>
